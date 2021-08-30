@@ -1,4 +1,4 @@
-.Searchbar {
+.searchbar {
   top: 0;
   left: 0;
   position: sticky;
@@ -46,7 +46,7 @@
   opacity: 1;
 }
 
-.button-label {
+.label {
   position: absolute;
   width: 1px;
   height: 1px;
