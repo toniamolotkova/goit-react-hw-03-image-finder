@@ -1,29 +1,45 @@
 import React, { Component } from 'react';
 import s from './Searchbar.module.css';
-
-// const Status = {
-//   IDLE: 'idle',
-//   PENDING: 'pending',
-//   RESOLVED: 'resolved',
-//   REJECTED: 'rejected',
-// };
+import { toast } from 'react-toastify';
 
 class Searchbar extends Component {
   state = {
-    searchValue: null,
-    error: null,
-    //status: Status.IDLE,
+    searchValue: '',
+  };
+
+  handleChange = e => {
+    this.setState({
+      searchValue: e.currentTarget.value,
+    });
+  };
+  handleSubmit = e => {
+    e.preventDefault();
+
+    if (this.state.searchValue.trim() === '') {
+      toast.warn('Enter correct value');
+      return;
+    }
+
+    this.props.onSubmit(this.state.searchValue);
+    this.reset();
+    console.log(this.state.searchValue);
+  };
+
+  reset = () => {
+    this.setState({ searchValue: '' });
   };
 
   render() {
     return (
       <header className={s.searchbar}>
-        <form className={s.form}>
+        <form className={s.form} onSubmit={this.handleSubmit}>
           <button type="submit" className={s.button}>
             <span className={s.label}>Search</span>
           </button>
 
           <input
+            value={this.state.searchValue}
+            onChange={this.handleChange}
             className={s.input}
             type="text"
             autocomplete="off"
