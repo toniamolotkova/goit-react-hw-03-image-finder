@@ -9,7 +9,7 @@ const fetchImagesWithQuery = (searchQuery, page) => {
       `${BASE_URL}/?q=${searchQuery}&page=${page}&key=${ACCESS_KEY}&image_type=photo&orientation=horizontal&per_page=12`,
     )
     .then(response => {
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.total > 0) {
         return response.data.hits;
       }
     });

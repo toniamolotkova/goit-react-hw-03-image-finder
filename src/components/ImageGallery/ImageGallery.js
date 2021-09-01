@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+
 import s from './ImageGallery.module.css';
 
 import API from '../../services/imageApi';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Button from 'components/Button';
+import Loader from 'react-loader-spinner';
 
 class ImageGallery extends Component {
   state = {
     images: null,
     page: 1,
     error: null,
+
     isLoading: false,
   };
 
@@ -18,9 +24,17 @@ class ImageGallery extends Component {
     const nextValue = this.props.searchValue;
     if (prevValue !== nextValue) {
       this.setState({ isLoading: true });
+      toast.info('Waiting...');
 
       API.fetchImagesWithQuery(nextValue, this.state.page)
-        .then(images => this.setState({ images }))
+        .then(images => {
+          if (images.length === 0) {
+            return toast.warn(`Can't find ${nextValue}. Sorry:(`, {
+              position: toast.POSITION.TOP_LEFT,
+            });
+          }
+          this.setState({ images });
+        })
         .catch(error => this.setState({ error }))
         .finally(() => this.setState({ isLoading: false }));
     }
@@ -37,31 +51,45 @@ class ImageGallery extends Component {
             behavior: 'smooth',
           });
         })
-        .catch(error => this.setState({ error }))
+        .catch(error =>
+          this.setState({
+            error: toast.error(`Can't find ${nextValue}. Sorry:(`),
+          }),
+        )
         .finally(() => this.setState({ isLoading: false }));
     }
   }
-  handleClick = () => {
+  handleClickBtn = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
   };
 
   render() {
-    const { images } = this.state;
+    const { images, isLoading } = this.state;
     return (
       <>
         <ul className={s.gallery}>
+          {isLoading && (
+            <Loader
+              type="Puff"
+              color="#00BFFF"
+              height={100}
+              width={100}
+              timeout={3000}
+            />
+          )}
           {images &&
             images.map(image => (
               <ImageGalleryItem
+                largeImg={image.largeImageURL}
                 key={image.id}
                 image={image.webformatURL}
                 descr={image.tags}
               />
             ))}
         </ul>
-        {images && <Button onClick={this.handleClick} />}
+        {images && <Button onClick={this.handleClickBtn} />}
       </>
     );
   }
