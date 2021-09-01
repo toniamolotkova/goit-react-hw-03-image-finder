@@ -9,34 +9,41 @@ import API from '../../services/imageApi';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Button from 'components/Button';
 import Loader from 'react-loader-spinner';
+import NotFoundImage from 'components/NotFoundImage';
+
+const Status = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
+};
 
 class ImageGallery extends Component {
   state = {
     images: null,
     page: 1,
     error: null,
-
-    isLoading: false,
+    status: Status.IDLE,
   };
 
   componentDidUpdate(prevProps, prevState) {
     const prevValue = prevProps.searchValue;
     const nextValue = this.props.searchValue;
     if (prevValue !== nextValue) {
-      this.setState({ isLoading: true });
+      this.setState({ status: Status.PENDING });
 
       API.fetchImagesWithQuery(nextValue, this.state.page)
         .then(images => {
           if (images.length === 0) {
-            return toast.error(`Can't find ${nextValue}. Sorry:(`, {
-              position: toast.POSITION.TOP_RIGHT,
+            return this.setState({
+              error: toast.error(`Can't find ${nextValue}. Sorry:(`),
+              status: Status.REJECTED,
             });
           }
 
-          return this.setState({ images });
+          return this.setState({ images, status: Status.RESOLVED });
         })
-        .catch(error => this.setState({ error }))
-        .finally(() => this.setState({ isLoading: false }));
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
 
     if (prevState.page !== this.state.page) {
@@ -44,6 +51,7 @@ class ImageGallery extends Component {
         .then(images => {
           this.setState(prevState => ({
             images: [...prevState.images, ...images],
+            status: Status.RESOLVED,
           }));
 
           window.scrollTo({
@@ -53,10 +61,10 @@ class ImageGallery extends Component {
         })
         .catch(error =>
           this.setState({
-            error: toast.error(`Can't find ${nextValue}. Sorry:(`),
+            error,
+            status: Status.REJECTED,
           }),
-        )
-        .finally(() => this.setState({ isLoading: false }));
+        );
     }
   }
   handleClickBtn = () => {
@@ -66,21 +74,37 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { images, isLoading } = this.state;
-    return (
-      <>
-        <ul className={s.gallery}>
-          {isLoading && (
-            <Loader
-              type="Puff"
-              color="#00BFFF"
-              height={100}
-              width={100}
-              timeout={3000}
-            />
-          )}
-          {images &&
-            images.map(image => (
+    const { images, status } = this.state;
+
+    if (status === 'idle') {
+      return (
+        <h1 style={{ color: 'darkblue', textAlign: 'center' }}>
+          Find your image!
+        </h1>
+      );
+    }
+
+    if (status === 'pending') {
+      return (
+        <Loader
+          type="Puff"
+          color="#00BFFF"
+          height={100}
+          width={100}
+          timeout={3000}
+        />
+      );
+    }
+
+    if (status === 'rejected') {
+      return <NotFoundImage />;
+    }
+
+    if (status === 'resolved') {
+      return (
+        <>
+          <ul className={s.gallery}>
+            {images.map(image => (
               <ImageGalleryItem
                 largeImg={image.largeImageURL}
                 key={image.id}
@@ -88,10 +112,11 @@ class ImageGallery extends Component {
                 descr={image.tags}
               />
             ))}
-        </ul>
-        {images && <Button onClick={this.handleClickBtn} />}
-      </>
-    );
+          </ul>
+          <Button onClick={this.handleClickBtn} />
+        </>
+      );
+    }
   }
 }
 
