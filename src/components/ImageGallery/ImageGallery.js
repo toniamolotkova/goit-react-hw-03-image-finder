@@ -24,16 +24,16 @@ class ImageGallery extends Component {
     const nextValue = this.props.searchValue;
     if (prevValue !== nextValue) {
       this.setState({ isLoading: true });
-      toast.info('Waiting...');
 
       API.fetchImagesWithQuery(nextValue, this.state.page)
         .then(images => {
           if (images.length === 0) {
-            return toast.warn(`Can't find ${nextValue}. Sorry:(`, {
-              position: toast.POSITION.TOP_LEFT,
+            return toast.error(`Can't find ${nextValue}. Sorry:(`, {
+              position: toast.POSITION.TOP_RIGHT,
             });
           }
-          this.setState({ images });
+
+          return this.setState({ images });
         })
         .catch(error => this.setState({ error }))
         .finally(() => this.setState({ isLoading: false }));

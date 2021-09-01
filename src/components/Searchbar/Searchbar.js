@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import s from './Searchbar.module.css';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import s from './Searchbar.module.css';
 
 class Searchbar extends Component {
   state = {
