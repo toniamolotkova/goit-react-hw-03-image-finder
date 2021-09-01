@@ -3,6 +3,7 @@ import './App.css';
 
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
+
 // const Status = {
 //   IDLE: 'idle',
 //   PENDING: 'pending',
@@ -20,10 +21,11 @@ class App extends Component {
   };
 
   render() {
+    const { searchValue } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery searchValue={this.state.searchValue} />
+        <ImageGallery searchValue={searchValue} />
       </div>
     );
   }
