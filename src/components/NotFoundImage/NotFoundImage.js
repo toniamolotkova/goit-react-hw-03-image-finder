@@ -1,5 +1,5 @@
 import s from './NotFoundImage.module.css';
-import image from './notfound.jpg';
+import image from '../../assets/notfound.jpg';
 
 const NotFindImage = () => {
   return (

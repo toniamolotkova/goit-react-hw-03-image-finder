@@ -10,6 +10,7 @@ import ImageGalleryItem from 'components/ImageGalleryItem';
 import Button from 'components/Button';
 import Loader from 'react-loader-spinner';
 import NotFoundImage from 'components/NotFoundImage';
+import Modal from 'components/Modal';
 
 const Status = {
   IDLE: 'idle',
@@ -24,6 +25,7 @@ class ImageGallery extends Component {
     page: 1,
     error: null,
     status: Status.IDLE,
+    modalImageInfo: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -72,9 +74,12 @@ class ImageGallery extends Component {
       page: prevState.page + 1,
     }));
   };
+  toggleModal = modalImageInfo => {
+    this.setState({ modalImageInfo });
+  };
 
   render() {
-    const { images, status } = this.state;
+    const { images, status, modalImageInfo } = this.state;
 
     if (status === 'idle') {
       return (
@@ -106,7 +111,7 @@ class ImageGallery extends Component {
           <ul className={s.gallery}>
             {images.map(image => (
               <ImageGalleryItem
-                largeImg={image.largeImageURL}
+                onOpenModal={() => this.toggleModal(image)}
                 key={image.id}
                 image={image.webformatURL}
                 descr={image.tags}
@@ -114,6 +119,9 @@ class ImageGallery extends Component {
             ))}
           </ul>
           <Button onClick={this.handleClickBtn} />
+          {modalImageInfo && (
+            <Modal onClose={this.toggleModal} imageInfo={modalImageInfo} />
+          )}
         </>
       );
     }
