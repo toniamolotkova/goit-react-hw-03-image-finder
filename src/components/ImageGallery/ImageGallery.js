@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-
+import PropTypes from 'prop-types';
 import s from './ImageGallery.module.css';
 
 import API from '../../services/imageApi';
@@ -36,13 +34,6 @@ class ImageGallery extends Component {
 
       API.fetchImagesWithQuery(nextValue, this.state.page)
         .then(images => {
-          if (images.length === 0) {
-            return this.setState({
-              error: toast.error(`Can't find ${nextValue}. Sorry:(`),
-              status: Status.REJECTED,
-            });
-          }
-
           return this.setState({ images, status: Status.RESOLVED });
         })
         .catch(error => this.setState({ error, status: Status.REJECTED }));
@@ -127,5 +118,9 @@ class ImageGallery extends Component {
     }
   }
 }
+
+ImageGallery.propTypes = {
+  searchValue: PropTypes.string.isRequired,
+};
 
 export default ImageGallery;

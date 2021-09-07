@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PropTypes from 'prop-types';
 
 import s from './Searchbar.module.css';
 
@@ -24,7 +25,6 @@ class Searchbar extends Component {
 
     this.props.onSubmit(this.state.searchValue);
     this.reset();
-    console.log(this.state.searchValue);
   };
 
   reset = () => {
@@ -53,5 +53,9 @@ class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default Searchbar;

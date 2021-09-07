@@ -5,13 +5,6 @@ import './App.css';
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 
-// const Status = {
-//   IDLE: 'idle',
-//   PENDING: 'pending',
-//   RESOLVED: 'resolved',
-//   REJECTED: 'rejected',
-// };
-
 class App extends Component {
   state = {
     searchValue: '',
